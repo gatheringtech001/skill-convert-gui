@@ -1,0 +1,85 @@
+{
+  "name": "skill-convert-gui",
+  "version": "1.0.0",
+  "description": "GUI for skill-convert — convert AI agent skills between Claude / Codex / Copilot / Universal",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"vite --port 5173\" \"wait-on tcp:5173 && cross-env VITE_DEV=1 electron .\"",
+    "build": "vite build",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "skill-convert": "github:gatheringtech001/skill-convert"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "postcss": "^8.4.38",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.4",
+    "vite": "^5.3.1",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.gatheringtech.skill-convert-gui",
+    "productName": "Skill Convert",
+    "copyright": "Copyright © 2026 GatheringTech",
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "node_modules/**/*",
+      "!node_modules/*/{CHANGELOG.md,README.md,readme.md,readme,test,tests,__tests__,coverage}",
+      "!node_modules/.cache"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/skill-convert",
+        "to": "skill-convert",
+        "filter": ["skill-convert.js", "package.json"]
+      }
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] }
+      ]
+    },
+    "mac": {
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] }
+      ],
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] }
+      ],
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "skill-convert-setup-${version}.exe"
+    },
+    "dmg": {
+      "artifactName": "skill-convert-${version}.dmg"
+    },
+    "appImage": {
+      "artifactName": "skill-convert-${version}.AppImage"
+    }
+  }
+}
