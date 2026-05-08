@@ -408,16 +408,22 @@
     <button class="tab-btn active" id="tabBrowser" onclick="switchTab('browser')">🗂️ 本机 Skills</button>
     <button class="tab-btn" id="tabConvert" onclick="switchTab('convert')">⚙️ 转换</button>
   </div>
+  <button id="langBtn" onclick="toggleLang()" style="
+    margin-left:10px; padding:4px 10px; border-radius:6px;
+    background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15);
+    color:#94a3b8; font-size:11px; cursor:pointer; flex-shrink:0;
+    -webkit-app-region:no-drag;
+  ">EN</button>
 </div>
 
 <div class="view active" id="viewBrowser">
   <div class="browser-wrap">
     <div class="browser-top">
       <div>
-        <div class="browser-title">本机 Skills</div>
+        <div class="browser-title" id="browserTitle">本机 Skills</div>
         <div class="browser-subtitle" id="browserMeta">扫描中…</div>
       </div>
-      <button class="browser-refresh" onclick="loadBrowser()">↻ 刷新</button>
+      <button class="browser-refresh" id="browserRefresh" onclick="loadBrowser()">↻ 刷新</button>
     </div>
     <div class="browser-scroll" id="browserScroll">
       <div class="browser-loading" id="browserLoading">⏳ 扫描 skill 目录…</div>
@@ -872,6 +878,107 @@
 
   // Auto-load on start
   loadBrowser();
+
+
+  // ─────────────────────────────────────────────────────────────
+  // i18n — ZH (default) / EN
+  // ─────────────────────────────────────────────────────────────
+  const _I18N = {
+    zh: {
+      tabBrowser:   '🗂️ 本机 Skills',
+      tabConvert:   '⚙️ 转换',
+      langBtn:      'EN',
+      browserTitle: '本机 Skills',
+      browserRefresh: '↻ 刷新',
+      browserLoading: '⏳ 扫描 skill 目录…',
+      pGroupCopilotPick: '📁 选 Workspace',
+      pGroupCopilotChange: '📁 更改路径',
+      emptyNoWs:    '(未选择 workspace)',
+      emptyMissing: '目录不存在：',
+      emptyNoSkill: '暂无 skill — ',
+      cvtBtn:       '转换 →',
+      // Convert tab labels
+      labelSkillDir:  'Skill 目录',
+      labelMode:      '模式',
+      labelFrom:      '来源平台',
+      labelTo:        '目标平台',
+      labelOutDir:    '输出目录',
+      btnConvert:     '转换',
+      btnClear:       '清空',
+      btnCopy:        '复制',
+      btnOpenFolder:  '📂 打开输出目录',
+      dzPrompt:       '点击浏览或拖拽 skill 文件夹至此',
+      outputPlaceholder: '选择 skill 目录后点击「转换」',
+    },
+    en: {
+      tabBrowser:   '🗂️ Local Skills',
+      tabConvert:   '⚙️ Convert',
+      langBtn:      'ZH',
+      browserTitle: 'Local Skills',
+      browserRefresh: '↻ Refresh',
+      browserLoading: '⏳ Scanning skill directories…',
+      pGroupCopilotPick: '📁 Select Workspace',
+      pGroupCopilotChange: '📁 Change Path',
+      emptyNoWs:    '(no workspace selected)',
+      emptyMissing: 'Directory not found: ',
+      emptyNoSkill: 'No skills found — ',
+      cvtBtn:       'Convert →',
+      labelSkillDir:  'Skill Directory',
+      labelMode:      'Mode',
+      labelFrom:      'From Platform',
+      labelTo:        'To Platform',
+      labelOutDir:    'Output Directory',
+      btnConvert:     'Convert',
+      btnClear:       'Clear',
+      btnCopy:        'Copy',
+      btnOpenFolder:  '📂 Open Output Folder',
+      dzPrompt:       'Click to browse or drag skill folder here',
+      outputPlaceholder: 'Select a skill directory and click Convert',
+    },
+  };
+
+  let _lang = 'zh';
+
+  function toggleLang() {
+    _lang = _lang === 'zh' ? 'en' : 'zh';
+    applyLang();
+    _browserLoaded = false;
+    loadBrowser(true);
+  }
+
+  function t(key) { return (_I18N[_lang] || _I18N.zh)[key] || key; }
+
+  function applyLang() {
+    const s = _I18N[_lang];
+    // Tab buttons
+    document.getElementById('tabBrowser').textContent = s.tabBrowser;
+    document.getElementById('tabConvert').textContent = s.tabConvert;
+    document.getElementById('langBtn').textContent    = s.langBtn;
+    // Browser header
+    const bt = document.getElementById('browserTitle');
+    if (bt) bt.textContent = s.browserTitle;
+    const br = document.getElementById('browserRefresh');
+    if (br) br.textContent = s.browserRefresh;
+    const bl = document.getElementById('browserLoading');
+    if (bl) bl.textContent = s.browserLoading;
+    // Convert tab form labels
+    const _setLabel = (sel, key) => { const el = document.querySelector(sel); if (el) el.textContent = s[key]; };
+    _setLabel('label[for="inputDir"]', 'labelSkillDir');
+    _setLabel('label[for="mode"]',     'labelMode');
+    _setLabel('label[for="from"]',     'labelFrom');
+    _setLabel('label[for="to"]',       'labelTo');
+    _setLabel('label[for="outDir"]',   'labelOutDir');
+    const runBtnText = document.getElementById('runBtnText');
+    if (runBtnText) runBtnText.textContent = s.btnConvert;
+    const clearBtn = document.querySelector('[onclick="clearAll()"]');
+    if (clearBtn) clearBtn.textContent = s.btnClear;
+    const copyBtn = document.querySelector('[onclick="copyOutput()"]');
+    if (copyBtn) copyBtn.textContent = s.btnCopy;
+    const openFolderBtn = document.getElementById('openFolderBtn');
+    if (openFolderBtn) openFolderBtn.textContent = s.btnOpenFolder;
+    const dzText = document.querySelector('.dz-prompt, #dropZone > div:nth-child(2)');
+    if (dzText && !dzText.querySelector) { /* skip if complex node */ }
+  }
 
 </script>
 </body>
