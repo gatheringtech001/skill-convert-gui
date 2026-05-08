@@ -6,6 +6,27 @@ const os = require('os');
 // Import skill-convert core
 const skillConvertPath = path.join(__dirname, 'skill-convert.js');
 
+// Parse skill metadata from SKILL.md frontmatter
+function parseSkillMeta(skillDir) {
+  const mdPath = path.join(skillDir, 'SKILL.md');
+  if (!fs.existsSync(mdPath)) return null;
+  try {
+    const content = fs.readFileSync(mdPath, 'utf8');
+    const fm = content.match(/^---\n([\s\S]*?)\n---/);
+    if (!fm) return { name: path.basename(skillDir), description: '', dir: skillDir };
+    const meta = {};
+    fm[1].split('\n').forEach(line => {
+      const [k, ...v] = line.split(':');
+      if (k && v.length) meta[k.trim()] = v.join(':').trim();
+    });
+    return {
+      name: meta.name || path.basename(skillDir),
+      description: meta.description || '',
+      dir: skillDir,
+    };
+  } catch { return null; }
+}
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 900,
