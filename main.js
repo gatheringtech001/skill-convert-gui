@@ -178,3 +178,30 @@ ipcMain.handle('scan-skills-workspace', async (e, workspacePath) => {
     }
   });
 });
+
+// scan-skills: no-arg alias — scans default platform dirs (no arg needed)
+ipcMain.handle('scan-skills', async () => {
+  const home = os.homedir();
+  const dirs = [
+    { platform: 'claude',    label: 'Claude Code',    dir: path.join(home, '.claude', 'skills') },
+    { platform: 'codex',     label: 'Codex',          dir: path.join(home, '.codex', 'skills') },
+    { platform: 'universal', label: 'Universal',      dir: path.join(home, '.agents', 'skills') },
+    { platform: 'copilot',   label: 'GitHub Copilot', dir: path.join(home, '.github', 'skills') },
+    { platform: 'openclaw',  label: 'OpenClaw',       dir: path.join(home, '.openclaw-2', 'workspace-backend', 'skills') },
+  ];
+
+  const result = {};
+  for (const { platform, label, dir } of dirs) {
+    if (!fs.existsSync(dir)) continue;
+    try {
+      const skills = fs.readdirSync(dir, { withFileTypes: true })
+        .filter(e => e.isDirectory())
+        .map(e => {
+          const skillDir = path.join(dir, e.name);
+          return parseSkillMeta(skillDir) || { name: e.name, description: '', dir: skillDir };
+        });
+      if (skills.length > 0) result[platform] = skills;
+    } catch {}
+  }
+  return result;
+});
