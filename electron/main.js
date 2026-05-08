@@ -150,3 +150,36 @@ ipcMain.handle('default-output-path', async (_, platform) => {
   };
   return map[platform] || path.join(home, 'skill-convert-dist');
 });
+
+// ============================================================
+// SKILL BROWSER IPC (v1.1)
+// ============================================================
+const { scanSkillDir } = require('./skillScanner');
+
+// Scan all known skill directories
+ipcMain.handle('scan-skills', async (_, copilotWorkspace) => {
+  const home = os.homedir();
+  const dirs = [
+    { platform: 'claude',    label: 'Claude Code',     path: path.join(home, '.claude', 'skills') },
+    { platform: 'codex',     label: 'Codex',           path: path.join(home, '.codex', 'skills') },
+    { platform: 'universal', label: 'Universal',       path: path.join(home, '.agents', 'skills') },
+    { platform: 'copilot',   label: 'GitHub Copilot',  path: copilotWorkspace ? path.join(copilotWorkspace, '.github', 'skills') : null },
+  ];
+
+  return dirs.map(d => ({
+    platform: d.platform,
+    label: d.label,
+    dirPath: d.path,
+    ...(d.path ? scanSkillDir(d.path) : { exists: false, skills: [] }),
+  }));
+});
+
+// Let user pick a workspace directory (for Copilot)
+ipcMain.handle('pick-workspace', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
+    title: 'Select Workspace (for GitHub Copilot skills)',
+  });
+  if (result.canceled || result.filePaths.length === 0) return null;
+  return result.filePaths[0];
+});
