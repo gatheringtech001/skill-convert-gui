@@ -409,7 +409,7 @@
     <button class="tab-btn active" id="tabBrowser" onclick="switchTab('browser')" data-i18n="tab_browser">🗂️ 本机 Skills</button>
     <button class="tab-btn" id="tabConvert" onclick="switchTab('convert')" data-i18n="tab_convert">⚙️ 转换</button>
   </div>
-  <button id="langBtn" onclick="toggleLang()" style="
+  <button id="lang-toggle" onclick="toggleLang()" style="
     margin-left:10px; padding:4px 10px; border-radius:6px;
     background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15);
     color:#94a3b8; font-size:11px; cursor:pointer; flex-shrink:0;
@@ -956,7 +956,7 @@
     // Tab buttons
     document.getElementById('tabBrowser').textContent = s.tabBrowser;
     document.getElementById('tabConvert').textContent = s.tabConvert;
-    document.getElementById('langBtn').textContent    = s.langBtn;
+    document.getElementById('lang-toggle').textContent    = s.langBtn;
     // Browser header
     const bt = document.getElementById('browserTitle');
     if (bt) bt.textContent = s.browserTitle;

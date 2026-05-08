@@ -81,7 +81,7 @@ function t(key) {
 function setLang(lang) {
   if (!translations[lang]) return;
   _currentLang = lang;
-  try { localStorage.setItem('sc_lang', lang); } catch (_) {}
+  try { localStorage.setItem('lang', lang); } catch (_) {}
   _applyLang();
 }
 
@@ -99,7 +99,7 @@ function _applyLang() {
 
 function initI18n() {
   let lang = 'zh';
-  try { lang = localStorage.getItem('sc_lang') || 'zh'; } catch (_) {}
+  try { lang = localStorage.getItem('lang') || 'zh'; } catch (_) {}
   _currentLang = lang;
   _applyLang();
 }
