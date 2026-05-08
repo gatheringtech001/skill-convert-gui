@@ -187,7 +187,8 @@ ipcMain.handle('scan-skills', async () => {
     { platform: 'codex',     label: 'Codex',          dir: path.join(home, '.codex', 'skills') },
     { platform: 'universal', label: 'Universal',      dir: path.join(home, '.agents', 'skills') },
     { platform: 'copilot',   label: 'GitHub Copilot', dir: path.join(home, '.github', 'skills') },
-    { platform: 'openclaw',  label: 'OpenClaw',       dir: path.join(home, '.openclaw-2', 'workspace-backend', 'skills') },
+    { platform: 'openclaw',        label: 'OpenClaw',         dir: path.join(home, '.openclaw', 'workspace', 'skills') },
+    { platform: 'openclaw-global',  label: 'OpenClaw (global)', dir: path.join(home, '.openclaw', 'skills') },
   ];
 
   const result = {};
