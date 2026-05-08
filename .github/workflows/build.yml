@@ -5,12 +5,6 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      release:
-        description: 'Create GitHub Release'
-        required: false
-        default: 'false'
-        type: boolean
 
 jobs:
   build-windows:
@@ -22,12 +16,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Configure git for private deps
-        run: |
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "https://github.com/"
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "git@github.com:"
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
 
       - name: Install dependencies
         run: npm install
@@ -54,12 +42,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Configure git for private deps
-        run: |
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "https://github.com/"
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "git@github.com:"
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
-
       - name: Install dependencies
         run: npm install
 
@@ -85,12 +67,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Configure git for private deps
-        run: |
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "https://github.com/"
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "git@github.com:"
-          git config --global url."https://x-access-token:${{ secrets.ORG_PAT }}@github.com/".insteadOf "ssh://git@github.com/"
-
       - name: Install dependencies
         run: npm install
 
@@ -109,7 +85,7 @@ jobs:
   release:
     needs: [build-windows, build-mac, build-linux]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.release == 'true'
+    if: startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: write
     steps:
@@ -145,6 +121,6 @@ jobs:
             - **macOS:** Download `.dmg`, drag to Applications
             - **Linux:** `chmod +x skill-convert-*.AppImage && ./skill-convert-*.AppImage`
 
-            > ⚠️ Windows Defender may warn about unrecognized app (unsigned). Click "More info" → "Run anyway".
+            > ⚠️ Windows Defender may warn about unrecognized app (unsigned). Click **More info** → **Run anyway**.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

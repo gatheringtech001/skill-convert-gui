@@ -9,11 +9,10 @@ const isDev = process.env.VITE_DEV === '1';
 // Path to bundled skill-convert.js
 function getSkillConvertPath() {
   if (isDev) {
-    // During dev, find it from node_modules
-    return path.join(__dirname, '..', 'node_modules', 'skill-convert', 'skill-convert.js');
+    return path.join(__dirname, '..', 'vendor', 'skill-convert.js');
   }
   // In production, it's in extraResources
-  return path.join(process.resourcesPath, 'skill-convert', 'skill-convert.js');
+  return path.join(process.resourcesPath, 'vendor', 'skill-convert.js');
 }
 
 function createWindow() {

@@ -1,7 +1,7 @@
 {
   "name": "skill-convert-gui",
   "version": "1.0.0",
-  "description": "GUI for skill-convert — convert AI agent skills between Claude / Codex / Copilot / Universal",
+  "description": "GUI for skill-convert \u2014 convert AI agent skills between Claude / Codex / Copilot / Universal",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite --port 5173\" \"wait-on tcp:5173 && cross-env VITE_DEV=1 electron .\"",
@@ -12,9 +12,7 @@
     "dist:linux": "npm run build && electron-builder --linux",
     "postinstall": "electron-builder install-app-deps"
   },
-  "dependencies": {
-    "skill-convert": "github:gatheringtech001/skill-convert"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
@@ -32,7 +30,7 @@
   "build": {
     "appId": "com.gatheringtech.skill-convert-gui",
     "productName": "Skill Convert",
-    "copyright": "Copyright © 2026 GatheringTech",
+    "copyright": "Copyright \u00a9 2026 GatheringTech",
     "directories": {
       "output": "release",
       "buildResources": "assets"
@@ -46,25 +44,43 @@
     ],
     "extraResources": [
       {
-        "from": "node_modules/skill-convert",
-        "to": "skill-convert",
-        "filter": ["skill-convert.js", "package.json"]
+        "from": "vendor",
+        "to": "vendor",
+        "filter": [
+          "skill-convert.js"
+        ]
       }
     ],
     "win": {
       "target": [
-        { "target": "nsis", "arch": ["x64"] }
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
     "mac": {
       "target": [
-        { "target": "dmg", "arch": ["x64", "arm64"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "category": "public.app-category.developer-tools"
     },
     "linux": {
       "target": [
-        { "target": "AppImage", "arch": ["x64"] }
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "category": "Development"
     },
