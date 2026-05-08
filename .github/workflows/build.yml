@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: skill-convert-mac
-          path: release/*.dmg
+          path: release/*.zip
           retention-days: 30
 
   build-linux:
@@ -96,7 +96,7 @@ jobs:
           prerelease: false
           files: |
             artifacts/skill-convert-windows/*.exe
-            artifacts/skill-convert-mac/*.dmg
+            artifacts/skill-convert-mac/*.zip
             artifacts/skill-convert-linux/*.AppImage
           body: |
             ## Skill Convert ${{ github.ref_name }}
@@ -107,12 +107,12 @@ jobs:
             | Platform | File |
             |----------|------|
             | Windows  | `skill-convert-setup-*.exe` |
-            | macOS    | `skill-convert-*.dmg` |
+            | macOS    | `skill-convert-*.zip` |
             | Linux    | `skill-convert-*.AppImage` |
 
             ### Installation
             - **Windows:** Download the `.exe` installer, double-click, follow setup wizard
-            - **macOS:** Download `.dmg`, drag to Applications
+            - **macOS:** Extract `.zip` and run Skill Convert.app
             - **Linux:** `chmod +x skill-convert-*.AppImage && ./skill-convert-*.AppImage`
 
             > ⚠️ Windows Defender may warn about unrecognized app (unsigned). Click **More info** → **Run anyway**.
