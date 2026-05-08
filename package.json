@@ -1,7 +1,7 @@
 {
   "name": "skill-convert-gui",
-  "version": "1.0.0",
-  "description": "skill-convert Windows GUI — Drag & drop skill converter",
+  "version": "1.1.0",
+  "description": "skill-convert Windows GUI \u2014 Drag & drop skill converter",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

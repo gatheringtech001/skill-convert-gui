@@ -256,6 +256,147 @@
       font-size: 13px;
     }
     .placeholder-text .ph-icon { font-size: 36px; opacity: 0.3; }
+  
+    /* ── Tab Navigation ── */
+    .tab-nav {
+      display: flex;
+      gap: 2px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 3px;
+      margin-left: auto;
+      -webkit-app-region: no-drag;
+    }
+    .tab-btn {
+      padding: 5px 13px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+
+    /* ── Views ── */
+    .view { display: none; flex: 1; overflow: hidden; }
+    .view.active { display: flex; }
+
+    /* ── Skill Browser ── */
+    .browser-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 20px 24px;
+    }
+    .browser-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+    .browser-title { font-size: 15px; font-weight: 600; }
+    .browser-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .browser-refresh {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 5px 11px;
+      font-size: 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .browser-refresh:hover { color: var(--text); border-color: #475569; }
+
+    .browser-scroll { flex: 1; overflow-y: auto; }
+
+    .platform-group { margin-bottom: 22px; }
+    .platform-group-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .platform-group-name { font-size: 13px; font-weight: 600; }
+    .platform-group-count { font-size: 12px; color: var(--text-muted); }
+    .ws-btn {
+      margin-left: auto;
+      font-size: 11px;
+      color: #60a5fa;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .ws-btn:hover { background: rgba(96,165,250,0.1); }
+
+    .skill-empty {
+      padding: 10px 14px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .skill-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+    .skill-card:hover { border-color: #4b5563; }
+    .skill-card-body { flex: 1; min-width: 0; }
+    .skill-card-row { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+    .skill-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .skill-badge {
+      flex-shrink: 0;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+    }
+    .b-claude    { background: rgba(139,92,246,0.15); color: #c4b5fd; border-color: rgba(139,92,246,0.3); }
+    .b-codex     { background: rgba(100,116,139,0.15); color: #94a3b8; border-color: rgba(100,116,139,0.3); }
+    .b-copilot   { background: rgba(34,197,94,0.15); color: #86efac; border-color: rgba(34,197,94,0.3); }
+    .b-universal { background: rgba(14,165,233,0.15); color: #7dd3fc; border-color: rgba(14,165,233,0.3); }
+    .skill-desc  { font-size: 11.5px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .skill-path  { font-size: 10.5px; color: #475569; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+    .skill-cvt-btn {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .skill-card:hover .skill-cvt-btn { opacity: 1; }
+    .skill-cvt-btn:hover { background: var(--accent-hover); }
+
+    .browser-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      color: var(--text-muted);
+      font-size: 13px;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
@@ -263,9 +404,28 @@
 <div class="header">
   <span class="header-icon">⚙️</span>
   <h1>Skill Convert</h1>
-  <span class="header-sub">Claude ↔ Codex ↔ Copilot ↔ Universal</span>
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tabBrowser" onclick="switchTab('browser')">🗂️ 本机 Skills</button>
+    <button class="tab-btn" id="tabConvert" onclick="switchTab('convert')">⚙️ 转换</button>
+  </div>
 </div>
 
+<div class="view active" id="viewBrowser">
+  <div class="browser-wrap">
+    <div class="browser-top">
+      <div>
+        <div class="browser-title">本机 Skills</div>
+        <div class="browser-subtitle" id="browserMeta">扫描中…</div>
+      </div>
+      <button class="browser-refresh" onclick="loadBrowser()">↻ 刷新</button>
+    </div>
+    <div class="browser-scroll" id="browserScroll">
+      <div class="browser-loading" id="browserLoading">⏳ 扫描 skill 目录…</div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="viewConvert">
 <div class="main">
   <!-- Left: Controls -->
   <div class="panel-left">
@@ -367,6 +527,7 @@
 
   </div>
 </div>
+</div><!-- /viewConvert -->
 
 <script>
   let inputDir = null;
@@ -587,6 +748,131 @@
     hideScorebar();
     hideOpenFolder();
   }
+
+  // ─────────────────────────────────────────────────────────────
+  // TAB SWITCHER
+  // ─────────────────────────────────────────────────────────────
+  let _currentTab = 'browser';
+
+  function switchTab(tab) {
+    _currentTab = tab;
+    document.getElementById('viewBrowser').classList.toggle('active', tab === 'browser');
+    document.getElementById('viewConvert').classList.toggle('active', tab === 'convert');
+    document.getElementById('tabBrowser').classList.toggle('active', tab === 'browser');
+    document.getElementById('tabConvert').classList.toggle('active', tab === 'convert');
+    if (tab === 'browser') loadBrowser();
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SKILL BROWSER
+  // ─────────────────────────────────────────────────────────────
+  const _PICONS   = { claude: '🟣', codex: '⬛', copilot: '🟢', universal: '🌐' };
+  const _PBADGE   = { claude: 'b-claude', codex: 'b-codex', copilot: 'b-copilot', universal: 'b-universal' };
+  let   _copilotWS = null;
+  let   _browserLoaded = false;
+
+  function _esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  async function loadBrowser(force) {
+    const scroll   = document.getElementById('browserScroll');
+    const loading  = document.getElementById('browserLoading');
+    const meta     = document.getElementById('browserMeta');
+
+    if (_browserLoaded && !force) return;
+    _browserLoaded = true;
+
+    scroll.innerHTML = '';
+    loading.style.display = 'flex';
+    scroll.appendChild(loading);
+
+    let groups;
+    try {
+      groups = await window.skillConvert.scanSkillsWorkspace(_copilotWS);
+    } catch(e) {
+      // fallback: try original scan-skills
+      try { groups = await window.skillConvert.scanSkills(); } catch(_) { groups = []; }
+    }
+
+    scroll.removeChild(loading);
+
+    let totalSkills = 0, totalDirs = 0;
+
+    (groups || []).forEach(group => {
+      if (group.exists) totalDirs++;
+      totalSkills += (group.skills || []).length;
+
+      const gEl = document.createElement('div');
+      gEl.className = 'platform-group';
+
+      const isCopilot = group.platform === 'copilot';
+      gEl.innerHTML = `
+        <div class="platform-group-hdr">
+          <span>${_PICONS[group.platform] || '📁'}</span>
+          <span class="platform-group-name">${_esc(group.label || group.platform)}</span>
+          ${group.exists ? `<span class="platform-group-count">(${group.skills.length})</span>` : ''}
+          ${isCopilot ? `<button class="ws-btn" onclick="pickCopilotWS()">📁 ${_copilotWS ? '更改路径' : '选 Workspace'}</button>` : ''}
+        </div>
+      `;
+
+      const skills = group.skills || [];
+      if (!group.dir) {
+        gEl.innerHTML += `<div class="skill-empty">(未选择 workspace)</div>`;
+      } else if (!group.exists) {
+        gEl.innerHTML += `<div class="skill-empty">目录不存在：<span>${_esc(group.dir)}</span></div>`;
+      } else if (skills.length === 0) {
+        gEl.innerHTML += `<div class="skill-empty">暂无 skill — ${_esc(group.dir)}</div>`;
+      } else {
+        skills.forEach(skill => {
+          const desc = skill.description
+            ? _esc(skill.description.slice(0, 80)) + (skill.description.length > 80 ? '…' : '')
+            : '';
+          const card = document.createElement('div');
+          card.className = 'skill-card';
+          card.innerHTML = `
+            <div class="skill-card-body">
+              <div class="skill-card-row">
+                <span class="skill-name">${_esc(skill.name)}</span>
+                <span class="skill-badge ${_PBADGE[group.platform]}">${_PICONS[group.platform]} ${group.platform}</span>
+              </div>
+              ${desc ? `<div class="skill-desc">${desc}</div>` : ''}
+              <div class="skill-path">${_esc(skill.dir)}</div>
+            </div>
+            <button class="skill-cvt-btn"
+              onclick="browserGoConvert(${JSON.stringify(skill.dir)}, ${JSON.stringify(group.platform)})">
+              转换 →
+            </button>
+          `;
+          gEl.appendChild(card);
+        });
+      }
+
+      scroll.appendChild(gEl);
+    });
+
+    meta.textContent = `共 ${totalSkills} 个 skill，${totalDirs} 个目录`;
+  }
+
+  async function pickCopilotWS() {
+    const ws = await window.skillConvert.pickWorkspace();
+    if (ws) { _copilotWS = ws; _browserLoaded = false; loadBrowser(true); }
+  }
+
+  function browserGoConvert(dir, platform) {
+    setInputDir(dir);
+    const fromSel = document.getElementById('from');
+    if (fromSel) {
+      for (let i = 0; i < fromSel.options.length; i++) {
+        if (fromSel.options[i].value === platform) { fromSel.selectedIndex = i; break; }
+      }
+    }
+    switchTab('convert');
+  }
+
+  // Auto-load on start
+  loadBrowser();
+
 </script>
 </body>
 </html>

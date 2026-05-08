@@ -140,3 +140,41 @@ function getDefaultOutDir(platform) {
   };
   return map[platform] || path.join(os.homedir(), '.agents', 'skills');
 }
+
+// ─────────────────────────────────────────────────────────────
+// v1.1: scanSkillsWorkspace + pickWorkspace
+// ─────────────────────────────────────────────────────────────
+ipcMain.handle('pick-workspace', async () => {
+  const result = await dialog.showOpenDialog({
+    title: 'Select Copilot Workspace (looks for .github/skills/)',
+    properties: ['openDirectory'],
+  });
+  return result.canceled ? null : result.filePaths[0];
+});
+
+ipcMain.handle('scan-skills-workspace', async (e, workspacePath) => {
+  const home = os.homedir();
+  const dirs = [
+    { platform: 'claude',    label: 'Claude Code',    dir: path.join(home, '.claude', 'skills') },
+    { platform: 'codex',     label: 'Codex',          dir: path.join(home, '.codex', 'skills') },
+    { platform: 'universal', label: 'Universal',      dir: path.join(home, '.agents', 'skills') },
+    { platform: 'copilot',   label: 'GitHub Copilot', dir: workspacePath ? path.join(workspacePath, '.github', 'skills') : null },
+  ];
+
+  return dirs.map(({ platform, label, dir }) => {
+    if (!dir) return { platform, label, dir: null, exists: false, skills: [] };
+    const exists = fs.existsSync(dir);
+    if (!exists) return { platform, label, dir, exists: false, skills: [] };
+    try {
+      const skills = fs.readdirSync(dir, { withFileTypes: true })
+        .filter(e => e.isDirectory())
+        .map(e => {
+          const skillDir = path.join(dir, e.name);
+          return parseSkillMeta(skillDir) || { name: e.name, description: '', dir: skillDir };
+        });
+      return { platform, label, dir, exists: true, skills };
+    } catch {
+      return { platform, label, dir, exists: true, skills: [] };
+    }
+  });
+});
