@@ -155,10 +155,12 @@ ipcMain.handle('pick-workspace', async () => {
 ipcMain.handle('scan-skills-workspace', async (e, workspacePath) => {
   const home = os.homedir();
   const dirs = [
-    { platform: 'claude',    label: 'Claude Code',    dir: path.join(home, '.claude', 'skills') },
-    { platform: 'codex',     label: 'Codex',          dir: path.join(home, '.codex', 'skills') },
-    { platform: 'universal', label: 'Universal',      dir: path.join(home, '.agents', 'skills') },
-    { platform: 'copilot',   label: 'GitHub Copilot', dir: workspacePath ? path.join(workspacePath, '.github', 'skills') : null },
+    { platform: 'claude',          label: 'Claude Code',       dir: path.join(home, '.claude', 'skills') },
+    { platform: 'codex',           label: 'Codex',             dir: path.join(home, '.codex', 'skills') },
+    { platform: 'universal',       label: 'Universal',         dir: path.join(home, '.agents', 'skills') },
+    { platform: 'copilot',         label: 'GitHub Copilot',    dir: workspacePath ? path.join(workspacePath, '.github', 'skills') : null },
+    { platform: 'openclaw',        label: 'OpenClaw',          dir: path.join(home, '.openclaw', 'workspace', 'skills') },
+    { platform: 'openclaw-global', label: 'OpenClaw (global)', dir: path.join(home, '.openclaw', 'skills') },
   ];
 
   return dirs.map(({ platform, label, dir }) => {
