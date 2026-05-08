@@ -24,7 +24,7 @@ function parseSkillMeta(skillDir) {
       description: meta.description || '',
       dir: skillDir,
     };
-  } catch { return null; }
+  } catch (e) { console.error('[parseSkillMeta]', skillDir, e.message); return null; }
 }
 
 function createWindow() {
@@ -196,7 +196,8 @@ ipcMain.handle('scan-skills-workspace', async (e, workspacePath) => {
           return parseSkillMeta(skillDir) || { name: e.name, description: '', dir: skillDir };
         });
       return { platform, label, dir, exists: true, skills };
-    } catch {
+    } catch (e) {
+      console.error('[scan-skills-workspace] readdirSync failed:', dir, e.message);
       return { platform, label, dir, exists: true, skills: [] };
     }
   });
@@ -225,7 +226,9 @@ ipcMain.handle('scan-skills', async () => {
           return parseSkillMeta(skillDir) || { name: e.name, description: '', dir: skillDir };
         });
       if (skills.length > 0) result[platform] = skills;
-    } catch {}
+    } catch (e) {
+      console.error('[scan-skills] readdirSync failed:', dir, e.message);
+    }
   }
   return result;
 });
