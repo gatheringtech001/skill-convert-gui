@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Convert</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #263044;
+      --border: #334155;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      -webkit-app-region: drag;
+      flex-shrink: 0;
+    }
+    .header-icon { font-size: 22px; }
+    .header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+    .header-sub { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+
+    /* Main layout */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left panel */
+    .panel-left {
+      width: 380px;
+      flex-shrink: 0;
+      padding: 20px;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Right panel */
+    .panel-right {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    /* Form group */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Dir picker */
+    .dir-picker {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .dir-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: default;
+    }
+    .dir-input.empty { color: var(--text-muted); }
+    .dir-input.filled { color: var(--text); }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.06);
+      color: var(--text);
+    }
+    .drop-zone .dz-icon { font-size: 28px; margin-bottom: 6px; }
+    .drop-zone.has-dir { border-style: solid; border-color: var(--accent); background: rgba(99,102,241,0.08); }
+    .drop-zone.has-dir .dz-name { font-weight: 600; color: var(--text); font-size: 13px; margin-top: 4px; }
+
+    /* Select */
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    select:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Toggle row */
+    .toggle-row { display: flex; align-items: center; gap: 10px; }
+    .toggle-row label { font-size: 13px; color: var(--text-muted); cursor: pointer; user-select: none; }
+    input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      border-radius: var(--radius);
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover:not(:disabled) { background: var(--border); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    /* Action bar */
+    .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    /* Output area */
+    .output-header { display: flex; align-items: center; gap: 8px; }
+    .output-header h3 { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .output-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+    .badge-pass { background: rgba(34,197,94,0.15); color: var(--success); }
+    .badge-fail { background: rgba(239,68,68,0.15); color: var(--danger); }
+    .badge-info { background: rgba(99,102,241,0.15); color: var(--accent-hover); }
+
+    .output-toolbar { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+
+    pre#output {
+      flex: 1;
+      background: #0a0f1c;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    pre#output .line-add { color: #4ade80; }
+    pre#output .line-remove { color: #f87171; }
+    pre#output .line-warn { color: #fbbf24; }
+    pre#output .line-ok { color: #4ade80; }
+    pre#output .line-error { color: #f87171; }
+    pre#output .line-info { color: #818cf8; }
+
+    /* Score bar */
+    .score-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .score-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    /* Tooltip-ish placeholder text */
+    .placeholder-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      gap: 8px;
+      font-size: 13px;
+    }
+    .placeholder-text .ph-icon { font-size: 36px; opacity: 0.3; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-icon">⚙️</span>
+  <h1>Skill Convert</h1>
+  <span class="header-sub">Claude ↔ Codex ↔ Copilot ↔ Universal</span>
+</div>
+
+<div class="main">
+  <!-- Left: Controls -->
+  <div class="panel-left">
+
+    <!-- Input dir -->
+    <div class="form-group">
+      <label class="form-label">Skill Directory</label>
+      <div id="dropZone" class="drop-zone" onclick="pickInput()">
+        <div class="dz-icon">📂</div>
+        <div>Click to browse or drag folder here</div>
+        <div id="dzName" class="dz-name" style="display:none"></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Mode -->
+    <div class="form-group">
+      <label class="form-label">Mode</label>
+      <select id="mode" onchange="onModeChange()">
+        <option value="convert">Convert</option>
+        <option value="lint">Lint (compatibility check)</option>
+        <option value="dryrun">Dry Run (preview diff)</option>
+        <option value="bidirectional">Bidirectional (all platforms)</option>
+      </select>
+    </div>
+
+    <!-- From platform -->
+    <div class="form-group" id="fromGroup">
+      <label class="form-label">From Platform</label>
+      <select id="from">
+        <option value="auto">Auto Detect</option>
+        <option value="claude">Claude Code</option>
+        <option value="codex">Codex</option>
+        <option value="copilot">GitHub Copilot</option>
+        <option value="universal">Universal</option>
+      </select>
+    </div>
+
+    <!-- To platform -->
+    <div class="form-group" id="toGroup">
+      <label class="form-label">To Platform</label>
+      <select id="to">
+        <option value="universal">Universal (~/.agents/skills/)</option>
+        <option value="codex">Codex (~/.codex/skills/)</option>
+        <option value="copilot">GitHub Copilot (~/.copilot/skills/)</option>
+        <option value="claude">Claude Code (~/.claude/skills/)</option>
+      </select>
+    </div>
+
+    <!-- Output dir -->
+    <div class="form-group" id="outGroup">
+      <label class="form-label">Output Directory <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+      <div class="dir-picker">
+        <div id="outInput" class="dir-input empty" onclick="pickOut()" title="Click to browse">default path</div>
+        <button class="btn btn-secondary btn-sm" onclick="pickOut()">Browse</button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Action buttons -->
+    <div class="action-bar">
+      <button id="runBtn" class="btn btn-primary" onclick="run()" style="flex:1">
+        <span id="runBtnIcon">▶</span>
+        <span id="runBtnText">Convert</span>
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="clearAll()">Clear</button>
+    </div>
+
+  </div>
+
+  <!-- Right: Output -->
+  <div class="panel-right">
+
+    <div class="output-header">
+      <h3>Output</h3>
+      <span id="statusBadge" style="display:none" class="output-badge"></span>
+      <div class="output-toolbar">
+        <button id="openFolderBtn" class="btn btn-secondary btn-sm" style="display:none" onclick="openFolder()">
+          📁 Open Folder
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="copyOutput()">Copy</button>
+      </div>
+    </div>
+
+    <div id="scorebar" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span style="font-size:13px;color:var(--text-muted)">Compatibility Score:</span>
+        <strong id="scoreVal" style="font-size:15px"></strong>
+      </div>
+      <div class="score-bar"><div id="scoreFill" class="score-fill"></div></div>
+    </div>
+
+    <pre id="output"><div class="placeholder-text">
+  <span class="ph-icon">⚙️</span>
+  <span>Select a skill directory and click Convert</span>
+</div></pre>
+
+  </div>
+</div>
+
+<script>
+  let inputDir = null;
+  let outDir = null;
+  let lastOutputPath = null;
+  let isRunning = false;
+
+  // ── Drag & Drop ──────────────────────────────────────────
+  const dropZone = document.getElementById('dropZone');
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      setInputDir(files[0].path);
+    }
+  });
+
+  function setInputDir(dir) {
+    inputDir = dir;
+    const name = dir.split(/[\\/]/).pop();
+    dropZone.classList.add('has-dir');
+    const dzName = document.getElementById('dzName');
+    dzName.textContent = '📁 ' + name;
+    dzName.style.display = 'block';
+    dropZone.querySelector('div:nth-child(2)').textContent = dir;
+  }
+
+  async function pickInput() {
+    const dir = await window.skillConvert.pickDir();
+    if (dir) setInputDir(dir);
+  }
+
+  async function pickOut() {
+    const dir = await window.skillConvert.pickOutDir();
+    if (dir) {
+      outDir = dir;
+      const el = document.getElementById('outInput');
+      el.textContent = dir;
+      el.classList.remove('empty');
+      el.classList.add('filled');
+    }
+  }
+
+  // ── Mode change ──────────────────────────────────────────
+  function onModeChange() {
+    const mode = document.getElementById('mode').value;
+    const toGroup = document.getElementById('toGroup');
+    const outGroup = document.getElementById('outGroup');
+    const runBtnText = document.getElementById('runBtnText');
+
+    if (mode === 'lint') {
+      toGroup.style.display = 'none';
+      outGroup.style.display = 'none';
+      runBtnText.textContent = 'Check Compatibility';
+    } else if (mode === 'bidirectional') {
+      toGroup.style.display = 'none';
+      outGroup.style.display = '';
+      runBtnText.textContent = 'Convert All Platforms';
+    } else {
+      toGroup.style.display = '';
+      outGroup.style.display = '';
+      runBtnText.textContent = mode === 'dryrun' ? 'Preview Diff' : 'Convert';
+    }
+  }
+
+  // ── Run ──────────────────────────────────────────────────
+  async function run() {
+    if (isRunning) return;
+    if (!inputDir) { showError('Please select a skill directory first.'); return; }
+
+    const mode = document.getElementById('mode').value;
+    const fromPlatform = document.getElementById('from').value;
+    const toPlatform = document.getElementById('to').value;
+
+    setRunning(true);
+    clearOutput();
+    hideBadge();
+    hideScorebar();
+    hideOpenFolder();
+
+    const opts = {
+      inputDir,
+      fromPlatform,
+      toPlatform,
+      outDir: outDir || null,
+      dryRun: mode === 'dryrun',
+      bidirectional: mode === 'bidirectional',
+      lint: mode === 'lint',
+    };
+
+    try {
+      const result = await window.skillConvert.convert(opts);
+      renderOutput(result.output);
+
+      if (mode === 'lint') {
+        renderScorebar(result.output);
+      }
+
+      if (result.exitCode === 0 || (mode === 'lint' && result.exitCode !== undefined)) {
+        if (mode === 'lint') {
+          const score = extractScore(result.output);
+          showBadge(score >= 70 ? 'PASS' : 'WARN', score >= 70 ? 'pass' : 'fail');
+        } else {
+          showBadge('DONE', 'pass');
+        }
+      } else {
+        showBadge('ERROR', 'fail');
+      }
+
+      lastOutputPath = result.outputPath;
+      if (result.outputPath && !opts.dryRun && !opts.lint) {
+        showOpenFolder();
+      }
+    } catch (err) {
+      renderOutput('[Error] ' + err.message);
+      showBadge('ERROR', 'fail');
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  function setRunning(v) {
+    isRunning = v;
+    const btn = document.getElementById('runBtn');
+    const icon = document.getElementById('runBtnIcon');
+    btn.disabled = v;
+    if (v) {
+      icon.innerHTML = '<div class="spinner"></div>';
+    } else {
+      icon.textContent = '▶';
+    }
+  }
+
+  function renderOutput(text) {
+    const pre = document.getElementById('output');
+    pre.innerHTML = '';
+    for (const line of text.split('\n')) {
+      const span = document.createElement('span');
+      span.textContent = line + '\n';
+      if (line.startsWith('+')) span.className = 'line-add';
+      else if (line.startsWith('-')) span.className = 'line-remove';
+      else if (line.includes('⚠️') || line.includes('WARNING')) span.className = 'line-warn';
+      else if (line.includes('✅') || line.includes('PASS')) span.className = 'line-ok';
+      else if (line.includes('❌') || line.includes('[ERROR]') || line.includes('[EXCEPTION]')) span.className = 'line-error';
+      else if (line.includes('🔍') || line.includes('⚙️') || line.includes('🔄')) span.className = 'line-info';
+      pre.appendChild(span);
+    }
+  }
+
+  function clearOutput() {
+    document.getElementById('output').innerHTML = '';
+  }
+
+  function showError(msg) {
+    document.getElementById('output').textContent = msg;
+    showBadge('ERROR', 'fail');
+  }
+
+  function showBadge(text, type) {
+    const el = document.getElementById('statusBadge');
+    el.textContent = text;
+    el.className = 'output-badge badge-' + (type === 'pass' ? 'pass' : type === 'fail' ? 'fail' : 'info');
+    el.style.display = '';
+  }
+
+  function hideBadge() { document.getElementById('statusBadge').style.display = 'none'; }
+
+  function showOpenFolder() { document.getElementById('openFolderBtn').style.display = ''; }
+  function hideOpenFolder() { document.getElementById('openFolderBtn').style.display = 'none'; }
+
+  function openFolder() {
+    if (lastOutputPath) window.skillConvert.openFolder(lastOutputPath);
+  }
+
+  function copyOutput() {
+    const text = document.getElementById('output').textContent;
+    navigator.clipboard.writeText(text);
+  }
+
+  function extractScore(text) {
+    const m = text.match(/(\d+)\/100/);
+    return m ? parseInt(m[1]) : 0;
+  }
+
+  function renderScorebar(text) {
+    const score = extractScore(text);
+    if (score === 0) return;
+    const bar = document.getElementById('scorebar');
+    const fill = document.getElementById('scoreFill');
+    const val = document.getElementById('scoreVal');
+    bar.style.display = '';
+    val.textContent = score + ' / 100';
+    val.style.color = score >= 90 ? '#4ade80' : score >= 70 ? '#fbbf24' : '#f87171';
+    fill.style.width = score + '%';
+    fill.style.background = score >= 90 ? '#4ade80' : score >= 70 ? '#fbbf24' : '#f87171';
+  }
+
+  function hideScorebar() { document.getElementById('scorebar').style.display = 'none'; }
+
+  function clearAll() {
+    inputDir = null;
+    outDir = null;
+    lastOutputPath = null;
+    dropZone.classList.remove('has-dir');
+    document.getElementById('dzName').style.display = 'none';
+    dropZone.querySelector('div:nth-child(2)').textContent = 'Click to browse or drag folder here';
+    const outInput = document.getElementById('outInput');
+    outInput.textContent = 'default path';
+    outInput.className = 'dir-input empty';
+    document.getElementById('output').innerHTML = `<div class="placeholder-text">
+  <span class="ph-icon">⚙️</span>
+  <span>Select a skill directory and click Convert</span>
+</div>`;
+    hideBadge();
+    hideScorebar();
+    hideOpenFolder();
+  }
+</script>
+</body>
+</html>

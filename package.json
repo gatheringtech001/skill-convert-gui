@@ -1,101 +1,39 @@
 {
   "name": "skill-convert-gui",
   "version": "1.0.0",
-  "description": "GUI for skill-convert \u2014 convert AI agent skills between Claude / Codex / Copilot / Universal",
-  "main": "electron/main.js",
+  "description": "skill-convert Windows GUI — Drag & drop skill converter",
+  "main": "main.js",
   "scripts": {
-    "dev": "concurrently \"vite --port 5173\" \"wait-on tcp:5173 && cross-env VITE_DEV=1 electron .\"",
-    "build": "vite build",
-    "dist": "npm run build && electron-builder --publish never",
-    "dist:win": "npm run build && electron-builder --win --publish never",
-    "dist:mac": "npm run build && electron-builder --mac --publish never",
-    "dist:linux": "npm run build && electron-builder --linux --publish never",
-    "postinstall": "electron-builder install-app-deps"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
-    "autoprefixer": "^10.4.19",
-    "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
-    "electron": "^30.0.0",
-    "electron-builder": "^24.13.3",
-    "postcss": "^8.4.38",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "tailwindcss": "^3.4.4",
-    "vite": "^5.3.1",
-    "wait-on": "^7.2.0"
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win --x64"
   },
   "build": {
-    "appId": "com.gatheringtech.skill-convert-gui",
+    "appId": "com.gatheringtech.skill-convert",
     "productName": "Skill Convert",
-    "copyright": "Copyright \u00a9 2026 GatheringTech",
-    "directories": {
-      "output": "release",
-      "buildResources": "assets"
-    },
-    "files": [
-      "dist/**/*",
-      "electron/**/*",
-      "node_modules/**/*",
-      "!node_modules/*/{CHANGELOG.md,README.md,readme.md,readme,test,tests,__tests__,coverage}",
-      "!node_modules/.cache"
-    ],
-    "extraResources": [
-      {
-        "from": "vendor",
-        "to": "vendor",
-        "filter": [
-          "skill-convert.js"
-        ]
-      }
-    ],
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
-    },
-    "mac": {
-      "target": [
-        {
-          "target": "zip",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ],
-      "category": "public.app-category.developer-tools"
-    },
-    "linux": {
-      "target": [
-        {
-          "target": "AppImage",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "category": "Development"
+      "target": "nsis",
+      "icon": "assets/icon.ico"
     },
     "nsis": {
       "oneClick": false,
-      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": false,
-      "artifactName": "skill-convert-setup-${version}.exe"
+      "installerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Skill Convert"
     },
-    "dmg": {
-      "artifactName": "skill-convert-${version}.dmg"
-    },
-    "appImage": {
-      "artifactName": "skill-convert-${version}.AppImage"
-    }
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "skill-convert.js",
+      "assets/**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3"
   }
 }
