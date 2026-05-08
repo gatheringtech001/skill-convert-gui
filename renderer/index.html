@@ -398,6 +398,7 @@
       gap: 10px;
     }
   </style>
+  <script src="i18n.js"></script>
 </head>
 <body>
 
@@ -405,28 +406,28 @@
   <span class="header-icon">⚙️</span>
   <h1>Skill Convert</h1>
   <div class="tab-nav">
-    <button class="tab-btn active" id="tabBrowser" onclick="switchTab('browser')">🗂️ 本机 Skills</button>
-    <button class="tab-btn" id="tabConvert" onclick="switchTab('convert')">⚙️ 转换</button>
+    <button class="tab-btn active" id="tabBrowser" onclick="switchTab('browser')" data-i18n="tab_browser">🗂️ 本机 Skills</button>
+    <button class="tab-btn" id="tabConvert" onclick="switchTab('convert')" data-i18n="tab_convert">⚙️ 转换</button>
   </div>
   <button id="langBtn" onclick="toggleLang()" style="
     margin-left:10px; padding:4px 10px; border-radius:6px;
     background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15);
     color:#94a3b8; font-size:11px; cursor:pointer; flex-shrink:0;
     -webkit-app-region:no-drag;
-  ">EN</button>
+  " data-i18n="lang_btn">EN</button>
 </div>
 
 <div class="view active" id="viewBrowser">
   <div class="browser-wrap">
     <div class="browser-top">
       <div>
-        <div class="browser-title" id="browserTitle">本机 Skills</div>
+        <div class="browser-title" id="browserTitle" data-i18n="browser_title">本机 Skills</div>
         <div class="browser-subtitle" id="browserMeta">扫描中…</div>
       </div>
-      <button class="browser-refresh" id="browserRefresh" onclick="loadBrowser()">↻ 刷新</button>
+      <button class="browser-refresh" id="browserRefresh" onclick="loadBrowser()" data-i18n="browser_refresh">↻ 刷新</button>
     </div>
     <div class="browser-scroll" id="browserScroll">
-      <div class="browser-loading" id="browserLoading">⏳ 扫描 skill 目录…</div>
+      <div class="browser-loading" id="browserLoading" data-i18n="browser_loading">⏳ 扫描 skill 目录…</div>
     </div>
   </div>
 </div>
@@ -790,6 +791,7 @@
     _browserLoaded = true;
 
     scroll.innerHTML = '';
+    loading.textContent = t('browser_loading');
     loading.style.display = 'flex';
     scroll.appendChild(loading);
 
@@ -818,17 +820,17 @@
           <span>${_PICONS[group.platform] || '📁'}</span>
           <span class="platform-group-name">${_esc(group.label || group.platform)}</span>
           ${group.exists ? `<span class="platform-group-count">(${group.skills.length})</span>` : ''}
-          ${isCopilot ? `<button class="ws-btn" onclick="pickCopilotWS()">📁 ${_copilotWS ? '更改路径' : '选 Workspace'}</button>` : ''}
+          ${isCopilot ? `<button class="ws-btn" onclick="pickCopilotWS()">📁 ${_copilotWS ? t('change_workspace') : t('pick_workspace')}</button>` : ''}
         </div>
       `;
 
       const skills = group.skills || [];
       if (!group.dir) {
-        gEl.innerHTML += `<div class="skill-empty">(未选择 workspace)</div>`;
+        gEl.innerHTML += `<div class="skill-empty">${t('empty_no_ws')}</div>`;
       } else if (!group.exists) {
-        gEl.innerHTML += `<div class="skill-empty">目录不存在：<span>${_esc(group.dir)}</span></div>`;
+        gEl.innerHTML += `<div class="skill-empty">${t('empty_missing')}<span>${_esc(group.dir)}</span></div>`;
       } else if (skills.length === 0) {
-        gEl.innerHTML += `<div class="skill-empty">暂无 skill — ${_esc(group.dir)}</div>`;
+        gEl.innerHTML += `<div class="skill-empty">${t('empty_no_skill')}${_esc(group.dir)}</div>`;
       } else {
         skills.forEach(skill => {
           const desc = skill.description
@@ -847,7 +849,7 @@
             </div>
             <button class="skill-cvt-btn"
               onclick="browserGoConvert(${JSON.stringify(skill.dir)}, ${JSON.stringify(group.platform)})">
-              转换 →
+              ${t('cvt_btn')}
             </button>
           `;
           gEl.appendChild(card);
@@ -857,7 +859,7 @@
       scroll.appendChild(gEl);
     });
 
-    meta.textContent = `共 ${totalSkills} 个 skill，${totalDirs} 个目录`;
+    meta.textContent = t('browser_meta_tpl').replace('{skills}', totalSkills).replace('{dirs}', totalDirs);
   }
 
   async function pickCopilotWS() {
@@ -877,6 +879,7 @@
   }
 
   // Auto-load on start
+  initI18n();
   loadBrowser();
 
 
