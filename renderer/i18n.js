@@ -83,6 +83,8 @@ function setLang(lang) {
   _currentLang = lang;
   try { localStorage.setItem('lang', lang); } catch (_) {}
   _applyLang();
+  // Notify app of language change
+  try { window.dispatchEvent(new CustomEvent('langchange', { detail: { lang } })); } catch (_) {}
 }
 
 function toggleLang() {

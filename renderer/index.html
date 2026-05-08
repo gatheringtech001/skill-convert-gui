@@ -803,7 +803,7 @@
       try { groups = await window.skillConvert.scanSkills(); } catch(_) { groups = []; }
     }
 
-    scroll.removeChild(loading);
+    loading.style.display = 'none';
 
     let totalSkills = 0, totalDirs = 0;
 
@@ -937,12 +937,14 @@
 
   let _lang = 'zh';
 
-  function toggleLang() {
-    _lang = _lang === 'zh' ? 'en' : 'zh';
+  // toggleLang is provided by renderer/i18n.js (window.toggleLang) with localStorage persistence
+  // Listen for langchange to reload browser tab content and sync legacy _lang
+  window.addEventListener('langchange', function(e) {
+    _lang = e.detail.lang;
     applyLang();
     _browserLoaded = false;
     loadBrowser(true);
-  }
+  });
 
   function t(key) { return (_I18N[_lang] || _I18N.zh)[key] || key; }
 
