@@ -878,11 +878,6 @@
     switchTab('convert');
   }
 
-  // Auto-load on start
-  initI18n();
-  loadBrowser();
-
-
   // ─────────────────────────────────────────────────────────────
   // i18n — ZH (default) / EN
   // ─────────────────────────────────────────────────────────────
@@ -982,6 +977,10 @@
     const dzText = document.querySelector('.dz-prompt, #dropZone > div:nth-child(2)');
     if (dzText && !dzText.querySelector) { /* skip if complex node */ }
   }
+
+  // Auto-load on start (must be after _I18N declaration to avoid TDZ)
+  initI18n();
+  loadBrowser();
 
 </script>
 </body>
