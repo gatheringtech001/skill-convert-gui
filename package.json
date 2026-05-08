@@ -96,6 +96,7 @@
     },
     "appImage": {
       "artifactName": "skill-convert-${version}.AppImage"
-    }
+    },
+    "publish": "never"
   }
 }
